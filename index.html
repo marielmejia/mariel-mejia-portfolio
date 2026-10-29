@@ -1,0 +1,788 @@
+<meta charset="utf-8">
+<title>Mariel Mejia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<style>
+  /* Layout: big name block, then a 2-col grid of projects, each led by a looping video. */
+  :root {
+    --bg: #f7f7f7;
+    --paper: #f7f8f5;
+    --ink: #0c0f11;
+    --muted: #7a7976;
+    --line: #e7e7e7;
+    --accent: var(--muted); /* was green; now the label gray */
+    --link: #FF3434;
+    --acc-bg: rgb(231 231 231 / 0.5); /* #e7e7e7 at 50% */
+    --acc-bg-hover: #e7e7e7;
+    --row-bg: #ffffff;
+    --font: "Albert Sans", "Helvetica Neue", Arial, sans-serif;
+    --gutter: 24px; /* one value for page margins and every column/row gutter */
+  }
+  @media (max-width: 1024px) {
+    :root { --gutter: 20px; }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+      --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+    --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; letter-spacing: -0.02em; }
+  [hidden] { display: none !important; } /* keeps the inactive page hidden even though #detail sets display: grid */
+  body {
+    margin: 0; /* the gutter is the whole page margin */
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 1.25rem/1.5 var(--font);
+    padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+  }
+  .wrap { padding-block: var(--gutter); display: grid; gap: 4.5rem; }
+
+  a { color: var(--link); font-weight: 700; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  .label {
+    font: 400 0.78125rem/1.3 var(--font); /* 12.5px */
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  /* Header */
+  header { display: grid; gap: 1.75rem; }
+  .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
+  .topbar nav { display: flex; gap: 1.5rem; }
+  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in red */
+  h1 {
+    font: 400 clamp(3rem, 11vw, 8.5rem)/0.92 var(--font);
+    letter-spacing: -0.06em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h1 span { color: var(--accent); }
+  h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -6%, not the global -2% */
+  h1 .h1-part { color: inherit; display: inline-block; }
+  header h1 { text-align: center; } /* homepage name only; project titles stay left-aligned */
+
+  h2, .h2 { font: 400 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.05 var(--font); letter-spacing: -0.04em; margin: 0; text-wrap: balance; }
+  .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
+
+  /* Work grid */
+  .work { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); }
+  .strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gutter); }
+  .strip .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .piece { background: var(--row-bg); padding: 100px; display: grid; grid-template-rows: auto 1fr; }
+  .media {
+    aspect-ratio: 1256 / 720; /* picture area of the videos, without their black side strips */
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: var(--line); /* light gray, not a black box, until the picture arrives */
+  }
+  /* Videos are a touch wider than their box so the black strips baked into each side sit outside it */
+  .media video, .bleed video {
+    position: absolute; top: 0; left: 50%;
+    width: 102.1%; height: 100%;
+    transform: translateX(-50%);
+    object-fit: cover; display: block;
+  }
+  /* The MP4s were exported without the black strips, so they fill the box exactly */
+  /* (no centering shift, so their edges land on whole pixels and no gray hairline shows) */
+  .media video[src$=".mp4"], .media video[data-src$=".mp4"], .bleed video[src$=".mp4"] { width: 100%; left: 0; transform: none; }
+  /* Videos and images fade in once they have something to show */
+  .media video, .media img { opacity: 0; }
+  .media .ready { opacity: 1; }
+  .media:has(> .ready) { background: transparent; } /* drop the loading gray so it can't peek out at the edges */
+
+  .piece-body { padding: 1.25rem 0 0; display: grid; gap: 0.85rem; align-content: start; }
+  .spec { width: 100%; border-collapse: collapse; font: 400 1rem/1.4 var(--font); }
+  .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
+  .spec td { padding: 0.3rem 0; vertical-align: baseline; }
+  /* Homepage cards: each label sits above its value in one column */
+  .piece .spec, .piece .spec tbody, .piece .spec tr, .piece .spec th, .piece .spec td { display: block; width: auto; padding: 0; }
+  .piece .spec tbody { display: grid; gap: 0.6rem; }
+  .piece h2 + .spec { margin-top: -0.6rem; } /* role sits close under the name (card gap is 0.85rem) */
+
+  /* About */
+  .about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 2rem var(--gutter); padding-top: 2.5rem; }
+  .about-side { display: grid; gap: 1rem; align-content: start; }
+  .about-photo { width: 100%; max-width: 250px; height: auto; aspect-ratio: 1; object-fit: cover; display: block; background: var(--line); overflow: hidden; }
+  .about-text { display: grid; gap: 1rem; }
+  .about-text p { margin: 0; }
+  .about-text a { font-weight: 400; }
+  .about-text .h2 { margin-bottom: 0.5rem; } /* a little extra room under the lead sentence */
+  .timeline-label { margin-top: 2.5rem; } /* clear break between the bio and the timeline */
+  .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .timeline li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; font-size: 1.125rem; }
+  .timeline time { font: 600 1rem/1.65 var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* Contact */
+  footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem var(--gutter); padding-top: 2.5rem; }
+
+
+  /* Geometric line arrows */
+  .ar { display: inline-block; width: 0.6em; height: 0.6em; vertical-align: 0; overflow: visible; fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+  .ar.r { margin-left: 0.35em; }
+  .ar.l { margin-right: 0.35em; }
+  .ar.u { margin-left: 0.35em; }
+  footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* matches the top navigation */
+
+  /* Clickable cards */
+  .piece { position: relative; }
+  .piece .stretched { position: absolute; inset: 0; z-index: 1; }
+  .piece .stretched:focus-visible { outline-offset: -3px; border-radius: 0; }
+  /* Hover (or keyboard focus): the panel inverts, dark background with light text */
+  .piece:hover, .piece:has(.stretched:focus-visible) { background: var(--ink); color: var(--row-bg); }
+  .piece .spec { color: inherit; }
+
+  /* Project detail view */
+  #detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
+  .detail-inner { width: 100%; }
+  .detail-head { display: grid; gap: 1.5rem; }
+  .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
+  .detail-title { font: 400 clamp(3rem, 11vw, 8.5rem)/0.92 var(--font); letter-spacing: -0.06em; margin: 0; text-wrap: balance; }
+  .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--muted); max-width: 30em; }
+  .bleed {
+    position: relative;
+    background: var(--ink);
+  }
+  .bleed { aspect-ratio: 1256 / 720; width: 100%; overflow: hidden; }
+  /* Main video sits inset on a black panel: 80% of the box, centered, with rounded corners */
+  .bleed { background: #000; }
+  .bleed #d-video { top: 10%; left: 10%; width: 80%; height: 80%; transform: none; border-radius: 20px; }
+  /* Project Details accordion: plus turns into minus when open */
+  .accordion { background: var(--acc-bg); overflow: hidden; } /* clips the body while its height animates */
+  .accordion:hover { background: var(--acc-bg-hover); }
+  .accordion summary {
+    list-style: none; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    font: 700 1.125rem/1.3 var(--font); color: var(--ink);
+  }
+  .accordion summary::-webkit-details-marker { display: none; }
+  .accordion summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .acc-icon { width: 0.7em; height: 0.7em; flex: none; overflow: visible; fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: square; vector-effect: non-scaling-stroke; }
+  .acc-icon .v { transform-origin: 8px 8px; }
+  .accordion[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* flips back as soon as closing starts */
+  .accordion .detail-body { padding: 0.25rem 1.1rem 1.5rem; }
+  .detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
+  .detail-body p { margin: 0; font-size: 1.25rem; line-height: 1.5; max-width: 36em; }
+  /* Paragraph style: slightly tighter than the global -2% */
+  .about-text p:not(.h2), .detail-body p, .about-text p:not(.h2) *, .detail-body p * { letter-spacing: -0.03em; }
+  .gallery .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bleed + .gallery { margin-top: calc(var(--gutter) - 2.5rem); } /* page gap is 2.5rem; this leaves one gutter */
+  .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+  .next {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem;
+    padding-top: 1.25rem;
+    color: var(--link); text-decoration: none;
+  }
+  .next .ar { width: 0.5em; height: 0.5em; stroke-width: 3; }
+
+  @media (max-width: 760px) {
+    .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
+    .gallery { grid-template-columns: minmax(0, 1fr); }
+    .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .piece { padding: 20px; } /* 100px would leave almost no room on a phone */
+    .strip .media:first-child { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .piece { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
+    .piece:hover { transform: translateY(-3px); }
+    /* Arrows slide in their own direction on hover */
+    .ar { transition: transform 0.25s ease; }
+    .acc-icon .v { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
+    /* Page transition: each page slides up into place */
+    .page-in { animation: page-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+    @keyframes page-in { from { opacity: 0; transform: translateY(200px); } to { opacity: 1; transform: none; } }
+    /* Homepage headline: starts oversized and low, then settles into place */
+    header { overflow-x: clip; } /* keeps the oversized start from widening the page */
+    /* Two steps: "that Shine" starts halfway through "Crafting Brands", so they overlap */
+    #home.page-in header h1 .h1-part { transform-origin: 50% 100%; animation: h1-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    #home.page-in header h1 .h1-part + .h1-part { animation-delay: 0.6s; }
+    @keyframes h1-in { from { opacity: 0; transform: translateY(120px) scale(1.6); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+    /* Homepage rows slide up as they scroll into view (uses translate, so the hover lift still works) */
+    .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
+    .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
+    .accordion { transition: background-color 0.2s ease; }
+    a:hover .ar.r, a:focus-visible .ar.r { transform: translateX(0.3em); }
+    a:hover .ar.l, a:focus-visible .ar.l { transform: translateX(-0.3em); }
+    a:hover .ar.u, a:focus-visible .ar.u { transform: translateY(-0.3em); }
+    .media video, .media img { transition: opacity 0.8s ease; }
+  }
+</style>
+
+<div class="wrap" id="home">
+  <header>
+    <div class="topbar">
+      <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
+      <nav aria-label="Sections">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <h1><span class="h1-part">Crafting Brands</span><br> <span class="h1-part">that Shine</span></h1>
+  </header>
+
+  <section id="work" aria-labelledby="work-title">
+    <div class="section-head">
+      <h2 id="work-title" class="label">Selected work</h2>
+      <span class="label">7 Projects</span>
+    </div>
+    <div class="work">
+
+      <article class="piece">
+        <a class="stretched" href="#rezera" aria-label="View the Rezera project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Rezera video 1" data-src="work/rezera.mp4"></video>
+          </div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Rezera video 2" data-src="work/rezera-colors.mp4"></video>
+          </div>
+          <div class="media"><img src="work/rezera-web1.jpg" alt="Rezera image 3" loading="lazy"></div>
+          <div class="media"><img src="work/rezera-web2.png" alt="Rezera image 4" loading="lazy"></div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Rezera video 5" data-src="work/rezera-5.mp4"></video>
+          </div>
+        </div>
+        <div class="piece-body">
+          <h2>Rezera</h2>
+          <table class="spec">
+            <tr><td>Art direction, design</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="piece">
+        <a class="stretched" href="#celcuity" aria-label="View the Celcuity project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Celcuity video 1" data-src="work/celcuity.mp4"></video>
+          </div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Celcuity video 2" data-src="work/celcuity-web.mp4"></video>
+          </div>
+          <div class="media"><img src="work/celcuity-mobile.jpg" alt="Celcuity image 3" loading="lazy"></div>
+          <div class="media"><img src="work/celcuity-web-all.jpg" alt="Celcuity image 4" loading="lazy"></div>
+          <div class="media"><img src="work/celcuity-web1.jpg" alt="Celcuity image 5" loading="lazy"></div>
+        </div>
+        <div class="piece-body">
+          <h2>Celcuity</h2>
+          <table class="spec">
+            <tr><td>Art direction, motion</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="piece">
+        <a class="stretched" href="#kardigan" aria-label="View the Kardigan project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Kardigan video 1" data-src="work/kardigan.mp4"></video>
+          </div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Kardigan video 2" data-src="work/kardigan-2-v2.mp4"></video>
+          </div>
+          <div class="media"><img src="work/kardigan-3-v2.png" alt="Kardigan image 3" loading="lazy"></div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Kardigan video 4" data-src="work/kardigan-4.mp4"></video>
+          </div>
+          <div class="media"><img src="work/kardigan-5-v2.svg" alt="Kardigan image 5" loading="lazy"></div>
+        </div>
+        <div class="piece-body">
+          <h2>Kardigan</h2>
+          <table class="spec">
+            <tr><td>Art direction, design</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="piece">
+        <a class="stretched" href="#santa-ana-bio" aria-label="View the Santa Ana Bio project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Santa Ana Bio video 1" data-src="work/santa-ana-bio.mp4"></video>
+          </div>
+          <div class="media"><img src="work/santa-ana-bio-2.jpg" alt="Santa Ana Bio image 2" loading="lazy"></div>
+          <div class="media"><img src="work/santa-ana-bio-3.jpg" alt="Santa Ana Bio image 3" loading="lazy"></div>
+          <div class="media"><img src="work/santa-ana-bio-4.jpg" alt="Santa Ana Bio image 4" loading="lazy"></div>
+          <div class="media"><img src="work/santa-ana-bio-5.png" alt="Santa Ana Bio image 5" loading="lazy"></div>
+        </div>
+        <div class="piece-body">
+          <h2>Santa Ana Bio</h2>
+          <table class="spec">
+            <tr><td>Art direction, design</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="piece">
+        <a class="stretched" href="#coherus" aria-label="View the Coherus Oncology project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Coherus Oncology video 1" data-src="work/coherus.mp4"></video>
+          </div>
+          <div class="media"><img src="work/coherus-2.jpg" alt="Coherus Oncology image 2" loading="lazy"></div>
+          <div class="media"><img src="work/coherus-3.jpg" alt="Coherus Oncology image 3" loading="lazy"></div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Coherus Oncology video 4" data-src="work/coherus.mp4"></video>
+          </div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Coherus Oncology video 5" data-src="work/coherus.mp4"></video>
+          </div>
+        </div>
+        <div class="piece-body">
+          <h2>Coherus Oncology</h2>
+          <table class="spec">
+            <tr><td>Art direction, design</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="piece">
+        <a class="stretched" href="#kailera" aria-label="View the Kailera Therapeutics project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Kailera Therapeutics video 1" data-src="work/kailera.mp4"></video>
+          </div>
+          <div class="media"><img src="work/kailera-3.svg" alt="Kailera Therapeutics image 2" loading="lazy"></div>
+          <div class="media"><img src="work/kailera-2.jpg" alt="Kailera Therapeutics image 3" loading="lazy"></div>
+          <div class="media"><img src="work/kailera-4.png" alt="Kailera Therapeutics image 4" loading="lazy"></div>
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Kailera Therapeutics video 5" data-src="work/kailera-5.mp4"></video>
+          </div>
+        </div>
+        <div class="piece-body">
+          <h2>Kailera Therapeutics</h2>
+          <table class="spec">
+            <tr><td>Art direction, design</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="piece">
+        <a class="stretched" href="#rezolute" aria-label="View the Rezolute project"></a>
+        <div class="strip">
+          <div class="media">
+            <video muted loop playsinline preload="none" aria-label="Rezolute video 1" data-src="work/rezolute.mp4"></video>
+          </div>
+          <div class="media"><img src="work/rezolute-2.png" alt="Rezolute image 2" loading="lazy"></div>
+          <div class="media"><img src="work/rezolute-3.png" alt="Rezolute image 3" loading="lazy"></div>
+          <div class="media"><img src="work/rezolute-4.jpg" alt="Rezolute image 4" loading="lazy"></div>
+          <div class="media"><img src="work/rezolute-5.jpg" alt="Rezolute image 5" loading="lazy"></div>
+        </div>
+        <div class="piece-body">
+          <h2>Rezolute</h2>
+          <table class="spec">
+            <tr><td>Art direction, design</td></tr>
+          </table>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="about" class="about" aria-labelledby="about-title">
+    <div class="about-side">
+      <span class="label" id="about-title">About</span>
+      <img class="about-photo" src="work/mariel.jpg" alt="Mariel Mejia" width="500" height="500" loading="lazy">
+    </div>
+    <div class="about-text">
+      <p class="h2">I’m an art director and designer with more than 20 years of agency experience.</p>
+      <p>I enjoy every part of the process: shaping the creative strategy, getting hands-on with the design, leading design teams and working closely with clients and collaborators from every discipline.</p>
+      <p>Since 2017, I’ve been a senior art director and designer at 22 Fillmore, a branding and marketing firm in the San Francisco Bay Area. Most of my work there has been in healthcare (biotech, life sciences and medtech), along with technology and financial services. Our websites for Ikena (2020), Aeglea (2021) and Kardigan (2026) each won Best Biotechnology Website of the Year from the Web Marketing Association.</p>
+      <p>I approach every project with the same goal: create something that looks exceptional and serves a clear purpose. A website should tell a story, show what makes a brand different and guide visitors toward action.</p>
+      <p id="contact">If you like what you see, I’d love to hear from you. Send me an <a href="mailto:mariel@spirolab.com" target="_blank" rel="noopener">email</a> or connect with me on <a href="https://www.linkedin.com/in/mariel-mejia-3bab542/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+      <span class="label timeline-label" id="experience-title">Experience</span>
+      <ul class="timeline" aria-labelledby="experience-title">
+        <li><time>2017</time><span>Senior Art Director at 22 Fillmore</span></li>
+        <li><time>2010</time><span>Senior Art Director/Partner at Spirolab</span></li>
+        <li><time>2006</time><span>Art Director at Digitas</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span class="label">© 2026 Mariel Mejia</span>
+    <a class="to-top" href="#top">Back to Top<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 11L8 5L14 11"/></svg></a>
+  </footer>
+</div>
+
+<main id="detail" hidden>
+  <div class="detail-inner detail-head">
+    <div class="topbar">
+      <a class="back" href="#work"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>All Work</a>
+      <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
+    </div>
+    <h1 class="detail-title" id="d-title"></h1>
+    <p class="detail-tagline" id="d-tagline"></p>
+    <details class="accordion" id="d-details">
+      <summary>Project Details<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
+      <div class="detail-body">
+        <p id="d-text"></p>
+        <table class="spec" id="d-spec"></table>
+      </div>
+    </details>
+  </div>
+  <div class="bleed">
+    <video id="d-video" autoplay muted loop playsinline preload="auto"></video>
+  </div>
+  <div class="detail-inner gallery" id="d-gallery">
+    <div class="media"><video muted loop playsinline preload="auto"></video></div>
+    <div class="media"><video muted loop playsinline preload="auto"></video></div>
+    <div class="media"><video muted loop playsinline preload="auto"></video></div>
+    <div class="media"><video muted loop playsinline preload="auto"></video></div>
+  </div>
+  <div class="detail-inner">
+    <a class="next" id="d-next" href="#"></a>
+  </div>
+</main>
+
+<script>
+  // Project detail pages, opened by #rezera / #celcuity
+  const projects = {
+    "rezera": {
+      "title": "Rezera",
+      "tagline": "Oral NLRP3 inhibitors for chronic inflammation.",
+      "video": "work/rezera.mp4",
+      "gallery": ["work/rezera-colors.mp4", "work/rezera-web1.jpg", "work/rezera-web2.png", "work/rezera-5.mp4"],
+      "text": "Rezera is a biotech company developing oral NLRP3 inhibitors, a new class of medicine aimed at the chronic inflammation behind many long-term diseases. The goal was to make complex science feel clear and credible to investors, clinicians and future partners. The work covered the visual identity, stationery and website, with motion bringing the brand to life on screen.",
+      "spec": [
+        [
+          "Client",
+          "Rezera"
+        ],
+        [
+          "Role",
+          "Art direction, design"
+        ],
+        [
+          "Deliverables",
+          "Identity, stationery, website"
+        ],
+        [
+          "Year",
+          "2026"
+        ]
+      ]
+    },
+    "celcuity": {
+      "title": "Celcuity",
+      "tagline": "Cancer therapies targeting the PAM pathway.",
+      "video": "work/celcuity.mp4",
+      "gallery": ["work/celcuity-web.mp4", "work/celcuity-mobile.jpg", "work/celcuity-web-all.jpg", "work/celcuity-web1.jpg"],
+      "text": "Celcuity is a clinical-stage biotech company developing cancer therapies that target the PAM pathway. The project was a website for desktop and mobile that explains the science to patients, physicians and investors in plain, confident language, with motion guiding the reader from one idea to the next.",
+      "spec": [
+        [
+          "Client",
+          "Celcuity"
+        ],
+        [
+          "Role",
+          "Art direction, motion"
+        ],
+        [
+          "Deliverables",
+          "Website, mobile web"
+        ],
+        [
+          "Year",
+          "2025"
+        ]
+      ]
+    },
+    "kardigan": {
+      "title": "Kardigan",
+      "tagline": "Cardiovascular drug development for heart health.",
+      "video": "work/kardigan.mp4",
+      "gallery": ["work/kardigan-2-v2.mp4", "work/kardigan-3-v2.png", "work/kardigan-4.mp4", "work/kardigan-5-v2.svg"],
+      "text": "Kardigan is developing new cardiovascular medicines to improve heart health. The website introduces the company and its approach to drug development, pairing a clean visual system with motion that moves visitors through the story section by section.",
+      "spec": [
+        [
+          "Client",
+          "Kardigan"
+        ],
+        [
+          "Role",
+          "Art direction, design"
+        ],
+        [
+          "Deliverables",
+          "Website"
+        ],
+        [
+          "Year",
+          "2026"
+        ]
+      ]
+    },
+    "santa-ana-bio": {
+      "title": "Santa Ana Bio",
+      "tagline": "Targeted therapies for precision immunology.",
+      "video": "work/santa-ana-bio.mp4",
+      "gallery": ["work/santa-ana-bio-2.jpg", "work/santa-ana-bio-3.jpg", "work/santa-ana-bio-4.jpg", "work/santa-ana-bio-5.png"],
+      "text": "Santa Ana Bio develops targeted therapies for precision immunology. The website presents the company's science and pipeline in a calm, clear layout built for investors, partners and future hires.",
+      "spec": [
+        [
+          "Client",
+          "Santa Ana Bio"
+        ],
+        [
+          "Role",
+          "Art direction, design"
+        ],
+        [
+          "Deliverables",
+          "Website"
+        ],
+        [
+          "Year",
+          "2026"
+        ]
+      ]
+    },
+    "coherus": {
+      "title": "Coherus Oncology",
+      "tagline": "Novel combination therapies for cancer.",
+      "video": "work/coherus.mp4",
+      "gallery": ["work/coherus-2.jpg", "work/coherus-3.jpg", "work/coherus.mp4", "work/coherus.mp4"],
+      "text": "Coherus Oncology develops novel combination therapies for cancer. The website brings the company's pipeline and science together in a structured layout that makes a complex oncology portfolio easy to follow.",
+      "spec": [
+        [
+          "Client",
+          "Coherus Oncology"
+        ],
+        [
+          "Role",
+          "Art direction, design"
+        ],
+        [
+          "Deliverables",
+          "Website"
+        ],
+        [
+          "Year",
+          "2026"
+        ]
+      ]
+    },
+    "kailera": {
+      "title": "Kailera Therapeutics",
+      "tagline": "GLP-1 therapies for obesity care.",
+      "video": "work/kailera.mp4",
+      "gallery": ["work/kailera-3.svg", "work/kailera-2.jpg", "work/kailera-4.png", "work/kailera-5.mp4"],
+      "text": "Kailera Therapeutics is developing GLP-1 therapies for obesity care. The website introduces the company and its programs with a warm, approachable look that keeps the science clear.",
+      "spec": [
+        [
+          "Client",
+          "Kailera Therapeutics"
+        ],
+        [
+          "Role",
+          "Art direction, design"
+        ],
+        [
+          "Deliverables",
+          "Website"
+        ],
+        [
+          "Year",
+          "2026"
+        ]
+      ]
+    },
+    "rezolute": {
+      "title": "Rezolute",
+      "tagline": "Ersodetug for hypoglycemia caused by hyperinsulinism.",
+      "video": "work/rezolute.mp4",
+      "gallery": ["work/rezolute-2.png", "work/rezolute-3.png", "work/rezolute-4.jpg", "work/rezolute-5.jpg"],
+      "text": "Rezolute is developing ersodetug to treat hypoglycemia caused by hyperinsulinism. The website explains the condition and the treatment in plain language for patients, families, physicians and investors.",
+      "spec": [
+        [
+          "Client",
+          "Rezolute"
+        ],
+        [
+          "Role",
+          "Art direction, design"
+        ],
+        [
+          "Deliverables",
+          "Website"
+        ],
+        [
+          "Year",
+          "2026"
+        ]
+      ]
+    }
+  };
+  const sites = {
+    'rezera': 'https://www.rezera.com',
+    'celcuity': 'https://www.celcuity.com',
+    'kardigan': 'https://www.kardigan.bio',
+    'santa-ana-bio': 'https://www.santaana.bio',
+    'coherus': 'https://www.coherus.com',
+    'kailera': 'https://www.kailera.com',
+    'rezolute': 'https://rezolutebio.com'
+  };
+  const order = Object.keys(projects);
+  const home = document.getElementById('home');
+  const detail = document.getElementById('detail');
+  const dVideo = document.getElementById('d-video');
+
+  // Slide the incoming page up whenever the view changes (not for in-page jumps like #about)
+  let currentView = null;
+  function slideIn(el, view) {
+    if (view === currentView) return;
+    currentView = view;
+    el.classList.remove('page-in');
+    void el.offsetWidth; // restart the animation
+    el.classList.add('page-in');
+  }
+
+  // Project Details accordion: animate the height open and closed instead of snapping
+  const acc = document.getElementById('d-details');
+  const accBody = acc.querySelector('.detail-body');
+  const accEase = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
+  let accAnim = null, bodyAnim = null;
+  const stopAccordion = () => { if (accAnim) accAnim.cancel(); if (bodyAnim) bodyAnim.cancel(); accAnim = bodyAnim = null; };
+  function resetAccordion() {
+    stopAccordion();
+    acc.classList.remove('closing');
+    acc.open = false;
+  }
+  acc.querySelector('summary').addEventListener('click', e => {
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    e.preventDefault();
+    const from = acc.offsetHeight; // current height, even mid-animation
+    const opening = !acc.open || acc.classList.contains('closing');
+    stopAccordion();
+    acc.classList.toggle('closing', !opening);
+    acc.open = true;
+    const to = opening ? acc.offsetHeight : acc.querySelector('summary').offsetHeight;
+    accAnim = acc.animate({ height: [from + 'px', to + 'px'] }, { duration: 600, easing: accEase });
+    bodyAnim = accBody.animate(opening
+      ? { opacity: [0, 1], transform: ['translateY(-12px)', 'none'] }
+      : { opacity: [1, 0], transform: ['none', 'translateY(-12px)'] },
+      { duration: opening ? 600 : 400, easing: accEase, fill: 'forwards' });
+    accAnim.onfinish = () => {
+      stopAccordion();
+      if (!opening) { acc.open = false; acc.classList.remove('closing'); }
+    };
+  });
+
+  function route() {
+    const id = location.hash.slice(1);
+    const p = projects[id];
+    const homeVideos = home.querySelectorAll('video');
+    if (p) {
+      document.getElementById('d-title').textContent = p.title;
+      resetAccordion();
+      document.getElementById('d-tagline').textContent = p.tagline;
+      document.getElementById('d-text').textContent = p.text;
+      const site = sites[id];
+      const siteRow = site
+        ? `<tr><th>Website</th><td><a href="${site}" target="_blank" rel="noopener">${site.replace(/^https?:\/\/(www\.)?/, '')}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4H12V12"/></svg></a></td></tr>`
+        : '';
+      document.getElementById('d-spec').innerHTML = p.spec.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + siteRow;
+      dVideo.setAttribute('aria-label', p.title + ' project video');
+      if (!dVideo.src.endsWith(p.video)) dVideo.src = p.video;
+      // Four gallery cards (video or still image); the main video stands in until each project has its own
+      const gallery = p.gallery || [p.video, p.video, p.video, p.video];
+      document.querySelectorAll('#d-gallery .media').forEach((m, i) => {
+        const src = gallery[i];
+        let v = m.querySelector('video'), img = m.querySelector('img');
+        if (/\.(jpe?g|png|webp|gif|svg)$/i.test(src)) {
+          if (v) v.remove();
+          if (!img) { img = document.createElement('img'); m.appendChild(img); }
+          if (!img.src.endsWith(src)) { img.classList.remove('ready'); img.src = src; }
+          img.alt = `${p.title} image ${i + 2}`;
+        } else {
+          if (img) img.remove();
+          if (!v) {
+            v = document.createElement('video');
+            v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+            v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+            m.appendChild(v);
+          }
+          if (!v.src.endsWith(src)) { v.classList.remove('ready'); v.src = src; }
+          v.setAttribute('aria-label', `${p.title} video ${i + 2}`);
+        }
+      });
+      const nextId = order[(order.indexOf(id) + 1) % order.length];
+      const next = document.getElementById('d-next');
+      next.href = '#' + nextId;
+      next.innerHTML = `<span class="label">Next Project</span><span class="h2">${projects[nextId].title}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span>`;
+      homeVideos.forEach(v => v.pause());
+      home.hidden = true;
+      detail.hidden = false;
+      detail.querySelectorAll('video').forEach(v => v.play().catch(() => {}));
+      window.scrollTo(0, 0);
+      slideIn(detail, id);
+    } else {
+      detail.querySelectorAll('video').forEach(v => v.pause());
+      detail.hidden = true;
+      home.hidden = false;
+      home.querySelectorAll('.piece[data-in-view="1"] video').forEach(v => v.play().catch(() => {}));
+      const target = id && document.getElementById(id);
+      if (target) target.scrollIntoView();
+      slideIn(home, 'home');
+    }
+  }
+  window.addEventListener('hashchange', route);
+  route();
+
+  // Back to Top: scroll up without touching the URL hash (so routing isn't triggered)
+  document.querySelector('.to-top').addEventListener('click', e => {
+    e.preventDefault();
+    const smooth = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+  });
+
+
+  // Fade each card's video or image in once it has a frame to show (covers gallery cards added later too)
+  const markReady = el => el.matches && el.matches('.media video, .media img') && el.classList.add('ready');
+  document.addEventListener('loadeddata', e => markReady(e.target), true);
+  document.addEventListener('load', e => markReady(e.target), true);
+  document.querySelectorAll('.media video, .media img').forEach(el => {
+    if (el.tagName === 'IMG' ? el.complete && el.naturalWidth : el.readyState >= 2) markReady(el);
+  });
+
+  // Homepage rows: videos start downloading about two screens before their row arrives,
+  // so they're ready by the time it slides up; rows play while on screen and pause when scrolled away
+  const rowObserver = new IntersectionObserver(entries => entries.forEach(e => {
+    e.target.dataset.inView = e.isIntersecting ? '1' : '';
+    e.target.querySelectorAll('video').forEach(v => {
+      if (e.isIntersecting && v.dataset.src && !v.getAttribute('src')) { v.preload = 'auto'; v.src = v.dataset.src; }
+      (e.isIntersecting && !home.hidden) ? v.play().catch(() => {}) : v.pause();
+    });
+  }), { rootMargin: '200% 0px' });
+  document.querySelectorAll('#work .piece').forEach(row => rowObserver.observe(row));
+
+  // Rows start hidden only when the reveal can run, so the page still shows everything without it
+  if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const revealObserver = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('revealed');
+      revealObserver.unobserve(e.target);
+    }), { threshold: 0.15 });
+    document.querySelectorAll('#work .piece').forEach(row => {
+      row.classList.add('will-reveal');
+      revealObserver.observe(row);
+    });
+  }
+
+</script>
